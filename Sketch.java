@@ -3,11 +3,11 @@ import processing.core.PApplet;
 public class Sketch extends PApplet {
 	
   // Set initial values
-	int numSnowflakes = 20;
-  float[] snowflakesX = new float[numSnowflakes];
-  float[] snowflakesY = new float[numSnowflakes];
-  float[] snowflakesSpeed = new float[numSnowflakes];
-  boolean[] ballHideStatus = new boolean[numSnowflakes];
+	int snowflake_count = 20;
+  float[] snowflakeX = new float[snowflake_count];
+  float[] snowflakeY = new float[snowflake_count];
+  float[] snowflakeSpeed = new float[snowflake_count];
+  boolean[] ballHideStatus = new boolean[snowflake_count];
 
   int numLives = 3;
 
@@ -40,10 +40,10 @@ public class Sketch extends PApplet {
     playerY = height - 30;
 
     // Set snowflakes
-    for (int i = 0; i < numSnowflakes; i++) {
-      snowflakesX[i] = random(width);
-      snowflakesY[i] = random(height);
-      snowflakesSpeed[i] = random(1, 2);
+    for (int i = 0; i < snowflake_count; i++) {
+      snowflakeX[i] = random(width);
+      snowflakeY[i] = random(height);
+      snowflakeSpeed[i] = random(1, 2);
       ballHideStatus[i] = false; // all snowflakes will start as visible
     }
   }
@@ -74,14 +74,14 @@ public class Sketch extends PApplet {
     }
     
     // Drawing Snowflakes
-    for (int i = 0; i < numSnowflakes; i++) {
+    for (int i = 0; i < snowflake_count; i++) {
       // Check if snowflake is visible and draw
       if (!ballHideStatus[i]) {
         fill(255, 255, 255);
-        ellipse(snowflakesX[i], snowflakesY[i], 15, 15);
+        ellipse(snowflakeX[i], snowflakeY[i], 15, 15);
 
         // Check for collision with player
-      if (dist(playerX, playerY, snowflakesX[i], snowflakesY[i]) < 15 && !collisionOccurred) {
+      if (dist(playerX, playerY, snowflakeX[i], snowflakeY[i]) < 15 && !collisionOccurred) {
         // Player loses a life
         if (numLives > 0) {
           numLives--;
@@ -92,14 +92,14 @@ public class Sketch extends PApplet {
   }
       
       // Update snowflake position
-      snowflakesY[i] += snowflakesSpeed[i];
+      snowflakeY[i] += snowflakeSpeed[i];
       
 
 
       // Wrap around screen
-      if (snowflakesY[i] > height) {
-        snowflakesY[i] = 0;
-        snowflakesX[i] = random(width);
+      if (snowflakeY[i] > height) {
+        snowflakeY[i] = 0;
+        snowflakeX[i] = random(width);
       }
     }
 
@@ -126,13 +126,13 @@ public class Sketch extends PApplet {
     // Pressing UP will slow down the snow by 50%, and pressing DOWN will speed it up by 200%.
     if (keyCode == UP) {
       // Slow down snowfall
-      for (int i = 0; i < numSnowflakes; i++) {
-        snowflakesSpeed[i] *= 0.5;
+      for (int i = 0; i < snowflake_count; i++) {
+        snowflakeSpeed[i] *= 0.5;
       }
     } else if (keyCode == DOWN) {
       // Speed up snowfall
-      for (int i = 0; i < numSnowflakes; i++) {
-        snowflakesSpeed[i] *= 2.0;
+      for (int i = 0; i < snowflake_count; i++) {
+        snowflakeSpeed[i] *= 2.0;
       }
     }
 
@@ -189,9 +189,9 @@ public class Sketch extends PApplet {
 
   // Will make the snowflake dissapear when it is clicked by the mouse
   public void mouseClicked() {
-    for (int i = 0; i < numSnowflakes; i++) {
+    for (int i = 0; i < snowflake_count; i++) {
       // Check if the mouse is over the visible snowflake
-      if (!ballHideStatus[i] && dist(mouseX, mouseY, snowflakesX[i], snowflakesY[i]) < 7.5) {
+      if (!ballHideStatus[i] && dist(mouseX, mouseY, snowflakeX[i], snowflakeY[i]) < 7.5) {
         if (mousePressed) {
           // Set the visibility of the snowflake to false (hidden)
           ballHideStatus[i] = true;
