@@ -2,6 +2,7 @@ import processing.core.PApplet;
 
 public class Sketch extends PApplet {
 	
+  // Set initial values
 	int numSnowflakes = 20;
   float[] snowflakesX = new float[numSnowflakes];
   float[] snowflakesY = new float[numSnowflakes];
@@ -120,8 +121,9 @@ public class Sketch extends PApplet {
     }
   }
   
-  // Note: Press the buttons, don't hold the arrow buttons!!!!!  Pressing UP will slow down the snow by 50%, and pressing DOWN will speed it up by 200%.
+  // Method for the keyboard input.  Takes input from UP/DOWN arrow keys and WASD.
   public void keyPressed() {
+    // Pressing UP will slow down the snow by 50%, and pressing DOWN will speed it up by 200%.
     if (keyCode == UP) {
       // Slow down snowfall
       for (int i = 0; i < numSnowflakes; i++) {
@@ -152,6 +154,7 @@ public class Sketch extends PApplet {
     }
   }
 
+  // Draws out the cubes that indicate the player's lives
   public void drawLives() {
     for (int i = 0; i < numLives; i++) {
       fill(245, 66, 66);
@@ -159,7 +162,7 @@ public class Sketch extends PApplet {
     }
   }
 
-
+  // Will make the player stop moving as soon as the release the WASD keys.
   public void keyReleased() {
     if (key == 'w') {
       upPressed = false;
@@ -178,11 +181,13 @@ public class Sketch extends PApplet {
     }
   }
 
+  // When the player collides with a snowflake, they will be reset back to the starting position
   public void resetPlayer() {
     playerX = width / 2;
     playerY = height - 30;
   }
 
+  // Will make the snowflake dissapear when it is clicked by the mouse
   public void mouseClicked() {
     for (int i = 0; i < numSnowflakes; i++) {
       // Check if the mouse is over the visible snowflake
