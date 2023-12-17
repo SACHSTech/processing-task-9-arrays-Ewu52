@@ -2,13 +2,31 @@ import processing.core.PApplet;
 
 public class Sketch extends PApplet {
 	
-	
+  // Set initial values
+	int snowflake_count = 20;
+  float[] snowflakeX = new float[snowflake_count];
+  float[] snowflakeY = new float[snowflake_count];
+  float[] snowflakeSpeed = new float[snowflake_count];
+  boolean[] ballHideStatus = new boolean[snowflake_count];
+
+  int numLives = 3;
+
+  float playerX, playerY;
+  float playerSpeed = 5;
+
+  boolean upPressed = false;
+  boolean downPressed = false;
+  boolean leftPressed = false;
+  boolean rightPressed = false;
+
+  boolean collisionOccurred = false;
+
   /**
-   * Called once at the beginning of execution, put your size all in this method
+   * Called once at the beginning of execution, put your size acll in this method
    */
   public void settings() {
 	// put your size call here
-    size(400, 400);
+    size(600, 400);
   }
 
   /** 
@@ -16,21 +34,169 @@ public class Sketch extends PApplet {
    * values here i.e background, stroke, fill etc.
    */
   public void setup() {
-    background(210, 255, 173);
+    background(0,0,0);
+    // Set player position
+    playerX = width / 2;
+    playerY = height - 30;
+
+    // Set snowflakes
+    for (int i = 0; i < snowflake_count; i++) {
+      snowflakeX[i] = random(width);
+      snowflakeY[i] = random(height);
+      snowflakeSpeed[i] = random(1, 2);
+      ballHideStatus[i] = false; // all snowflakes will start as visible
+    }
   }
 
-  /**
-   * Called repeatedly, anything drawn to the screen goes here
-   */
   public void draw() {
-	  
-	// sample code, delete this stuff
-    stroke(128);
-    line(150, 25, 270, 350);  
+    // Update background
+    background(0,0,0);
 
-    stroke(255);
-    line(50, 125, 70, 50);  
+    // Draw lives
+    drawLives();
+
+    // Draw player
+    fill(0, 0, 255);
+    ellipse(playerX, playerY, 20, 20);
+
+    // Move player based on user input  
+    if (upPressed){
+      playerY -= 3;
+    }
+    if (downPressed){
+      playerY += 3;
+    }
+    if (leftPressed){
+      playerX -= 3;
+    }
+    if (rightPressed){
+      playerX += 3;
+    }
+    
+    // Drawing Snowflakes
+    for (int i = 0; i < snowflake_count; i++) {
+      // Check if snowflake is visible and draw
+      if (!ballHideStatus[i]) {
+        fill(255, 255, 255);
+        ellipse(snowflakeX[i], snowflakeY[i], 15, 15);
+
+        // Check for collision with player
+      if (dist(playerX, playerY, snowflakeX[i], snowflakeY[i]) < 15 && !collisionOccurred) {
+        // Player loses a life
+        if (numLives > 0) {
+          numLives--;
+          resetPlayer();
+          collisionOccurred = true;
+      }
+    }
+  }
+      
+      // Update snowflake position
+      snowflakeY[i] += snowflakeSpeed[i];
+      
+
+
+      // Wrap around screen
+      if (snowflakeY[i] > height) {
+        snowflakeY[i] = 0;
+        snowflakeX[i] = random(width);
+      }
+    }
+
+      // Reset collisionOccured back to false when the player collides.  
+      if (collisionOccurred) {
+        collisionOccurred = false;
+      }
+
+      // Check for mouse click on snowflakes
+      mouseClicked();
+
+    // Check for game over
+    if (numLives <= 0) {
+      background(255);
+      fill(0);
+      textSize(30);
+      textAlign(CENTER, CENTER);
+      text("Game Over", width / 2, height / 2);
+    }
   }
   
-  // define other methods down here.
+  // Method for the keyboard input.  Takes input from UP/DOWN arrow keys and WASD.
+  public void keyPressed() {
+    // Pressing UP will slow down the snow by 50%, and pressing DOWN will speed it up by 200%.
+    if (keyCode == UP) {
+      // Slow down snowfall
+      for (int i = 0; i < snowflake_count; i++) {
+        snowflakeSpeed[i] *= 0.5;
+      }
+    } else if (keyCode == DOWN) {
+      // Speed up snowfall
+      for (int i = 0; i < snowflake_count; i++) {
+        snowflakeSpeed[i] *= 2.0;
+      }
+    }
+
+    // When the user presses WASD, it sets the booleans to true to allow the player to move.
+    if (key == 'w') {
+      upPressed = true;
+    }
+
+    if (key == 's') {
+      downPressed = true;
+    }
+
+    if (key == 'a') {
+      leftPressed = true;
+    }
+
+    if (key == 'd') {
+      rightPressed = true;
+    }
+  }
+
+  // Draws out the cubes that indicate the player's lives
+  public void drawLives() {
+    for (int i = 0; i < numLives; i++) {
+      fill(245, 66, 66);
+      rect(width - 30 - i * 30, 10, 20, 20);
+    }
+  }
+
+  // Will make the player stop moving as soon as the release the WASD keys.
+  public void keyReleased() {
+    if (key == 'w') {
+      upPressed = false;
+    }
+
+    if (key == 's') {
+      downPressed = false;
+    }
+
+    if (key == 'a') {
+      leftPressed = false;
+    }
+
+    if (key == 'd') {
+      rightPressed = false;
+    }
+  }
+
+  // When the player collides with a snowflake, they will be reset back to the starting position
+  public void resetPlayer() {
+    playerX = width / 2;
+    playerY = height - 30;
+  }
+
+  // Will make the snowflake dissapear when it is clicked by the mouse
+  public void mouseClicked() {
+    for (int i = 0; i < snowflake_count; i++) {
+      // Check if the mouse is over the visible snowflake
+      if (!ballHideStatus[i] && dist(mouseX, mouseY, snowflakeX[i], snowflakeY[i]) < 7.5) {
+        if (mousePressed) {
+          // Set the visibility of the snowflake to false (hidden)
+          ballHideStatus[i] = true;
+        }  
+      }
+    }
+  }
 }
